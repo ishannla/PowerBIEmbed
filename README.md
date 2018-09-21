@@ -1,24 +1,30 @@
-# PowerBIEmbed
+# Features
 
 Users **MUST** have a Power BI Pro license to use this tool and have an Azure Active Directory set up for authentication.
 
 My tool solves multiple problems with its incorporated feature set: 
--	Refresh: allows user to refresh chart real-time to reflect any updated changes in data rather than having to re-export report into PowerPoint 
--	Toggle Filters: allows user to enable/disable filters pane, which provides functionality to apply filters on the data within a selected visual
--	Toggle View Mode: allows user to toggle edit/view mode, which enables them to make changes to the report directly from the add-in rather than having to use the Power BI app 
+-	**Refresh:** allows user to refresh chart real-time to reflect any updated changes in data rather than having to re-export report into PowerPoint 
+-	**Toggle Filters:** allows user to enable/disable filters pane, which provides functionality to apply filters on the data within a selected visual
+-	**Toggle View Mode:** allows user to toggle edit/view mode, which enables them to make changes to the report directly from the add-in rather than having to use the Power BI app  
 
-![Options pane](images/options.jpg?raw=true)
+\s\s
+
+![Options pane](PowerBIEmbedWeb/options.jpg?raw=true)
 
 The following options are enabled on hover: get rid of options, go back to navigation, toggle filters, toggle edit/view mode, refresh report. 
 
-![My Workspace](images/myworkspace.jpg?raw=true)
+![My Workspace](PowerBIEmbedWeb/myworkspace.jpg?raw=true)
 
-![Shared Workspaces](images/sharedworkspace.jpg?raw=true)
+![Shared Workspaces](PowerBIEmbedWeb/sharedworkspace.jpg?raw=true)  
 
 The user can not only open reports that are stored within “My Workspace,” but can also browse through any shared workspaces that they are members of and open reports within them. 
 
 To embed a report, we need 3 parameters: the report id, the report embed URL, and a token.
-For embedding reports in “My Workspace,” we use the access token generated during our log-in for our token while for reports in shared workspaces, we have to generate a specific token for each report we want to embed. 
+For embedding reports in “My Workspace,” we use the access token generated during our log-in for our token while for reports in shared workspaces, we have to generate a specific token for each report we want to embed.   
+
+\s\s
+
+# Set-up Instructions
 
 Instructions for creating Azure AD tenant 
 1.	Sign into Azure web portal with an account that has an Azure subscription
