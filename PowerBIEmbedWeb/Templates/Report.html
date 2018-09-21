@@ -1,0 +1,173 @@
+﻿<html>
+
+<head>
+	<meta charset="UTF-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+	<title></title>
+
+	<!-- need following links for modern fonts, for Office UI Fabric, go to https://aka.ms/office-ui-fabric -->
+	<link rel="stylesheet" href="https://appsforoffice.microsoft.com/fabric/2.1.0/fabric.min.css">
+	<link rel="stylesheet" href="https://appsforoffice.microsoft.com/fabric/2.1.0/fabric.components.min.css">
+	<!-- Compiled and minified JavaScript -->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-rc.2/css/materialize.min.css">
+	<!--Import Google Icon Font-->
+	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+	<!--Import materialize.css-->
+	<link type="text/css" rel="stylesheet" href="css/materialize.min.css" media="screen,projection" />
+	<!--Import my css file-->
+	<link href="Navigation.css" rel="stylesheet" type="text/css" />
+
+	<script src="https://www.promisejs.org/polyfills/promise-7.0.4.min.js"></script>
+	<script src="../Scripts/powerbi.min.js"></script>
+	<script src="../Scripts/jquery-3.3.1.js" type="text/javascript"></script>
+	<script src="../Scripts/FabricUI/MessageBanner.js" type="text/javascript"></script>
+	<script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js" type="text/javascript"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-rc.2/js/materialize.min.js"></script>
+</head>
+
+<body>
+
+	<div>
+		<div id="embedContainer" margin-top="0px" margin-bottom="0px"> </div>
+
+		<div class="fixed-action-btn">
+			<a onclick="refresh()" class="btn-floating btn-large grey darken-1">
+				<i class="large material-icons">refresh</i>
+			</a>
+			<ul>
+				<li><a onclick="destroyer()" class="btn-floating red"><i class="material-icons">delete</i></a></li>
+				<li><a onclick="back()" class="btn-floating orange"><i class="material-icons">arrow_back</i></a></li>
+				<li><a onclick="toggleFilters()" class="btn-floating grey"><i class="material-icons">filter_list</i></a></li>
+				<li><a onclick="toggleViewMode()" class="btn-floating grey"><i class="material-icons">edit</i></a></li>
+			</ul>
+		</div>
+	</div>
+
+
+	<script>
+
+		function importReportParameters(models) {
+			var filtersEnabled = Office.context.document.settings.get("filtersEnabled")
+
+			// 2 out of the 4 parameters we need to generate report
+			var reportId = Office.context.document.settings.get("reportId")
+			var embedUrl = Office.context.document.settings.get("embedUrl")
+
+			// the remaning 2 parameters will depend on the results of permission and reportType
+			var permission = Office.context.document.settings.get("permission")
+			var reportType = Office.context.document.settings.get("reportType")
+
+			var viewPermission;
+			if (permission == "view")
+				viewPermission = models.ViewMode.View
+			else if (permission == "edit")
+				viewPermission = models.ViewMode.Edit
+
+			if (reportType == "user_owns_data") {
+				var accessToken = localStorage.getItem("accessToken")
+				loadReport(models, accessToken, models.TokenType.Aad, embedUrl, reportId, viewPermission, filtersEnabled);
+			} else if (reportType == "app_owns_data") {
+				var workspaceId = Office.context.document.settings.get("workspaceId")
+				$.ajax({
+					url: "/api/authentication/getembedtoken/" + workspaceId + "/" + reportId + "/" + permission,
+					success: function (result) {
+						var embedToken = result;
+						loadReport(models, embedToken, models.TokenType.Embed, embedUrl, reportId, viewPermission, filtersEnabled);
+					}, error: function (xhr, status, error) {
+						console.log(error)
+					}
+				});
+			}
+		}
+
+		function loadReport(models, token, tokenCategory, embedUrl, reportId, viewPermission, filtersEnabled) {
+			var config = {
+				type: 'report',
+				tokenType: tokenCategory,
+				accessToken: token,
+				embedUrl: embedUrl,
+				id: reportId,
+				permissions: models.Permissions.All,
+				viewMode: viewPermission,
+				settings: {
+					filterPaneEnabled: filtersEnabled,
+					navContentPaneEnabled: true
+				}
+			};
+
+			var embedContainer = document.getElementById('embedContainer');
+			var report = powerbi.embed(embedContainer, config);
+		}
+
+		function refresh() {
+			var models = window['powerbi-client'].models;
+			importReportParameters(models)
+		}
+
+		// switch between view/edit mode
+		function toggleViewMode() {
+			var permission = Office.context.document.settings.get("permission")
+
+			if (permission == "view")
+				Office.context.document.settings.set("permission", "edit")
+			else if (permission == "edit")
+				Office.context.document.settings.set("permission", "view")
+			Office.context.document.settings.saveAsync(function (asyncResult) { });
+
+			var models = window['powerbi-client'].models;
+			importReportParameters(models)
+		}
+
+		function toggleFilters() {
+			var filtersEnabled = Office.context.document.settings.get("filtersEnabled")
+			Office.context.document.settings.set("filtersEnabled", !filtersEnabled)
+			Office.context.document.settings.saveAsync(function (asyncResult) { });
+
+			var models = window['powerbi-client'].models;
+			importReportParameters(models)
+		}
+
+		function back() {
+			Office.context.document.settings.remove("reportType")
+			Office.context.document.settings.remove("reportLoaded")
+			Office.context.document.settings.remove("filtersEnabled")
+			Office.context.document.settings.remove("permission")
+			Office.context.document.settings.remove("workspaceId")
+			Office.context.document.settings.remove("reportId");
+			Office.context.document.settings.remove("embedUrl")
+			Office.context.document.settings.saveAsync(function (asyncResult) { });
+			switchLocation("Navigation.html");
+		}
+
+		// destroys hovering button
+		function destroyer() {
+			$('.fixed-action-btn').floatingActionButton('close');
+			$('.fixed-action-btn').hide();
+			$('.fixed-action-btn').floatingActionButton('destroy');
+		}
+
+		function switchLocation(destination) {
+			window.location = window.location.origin + "/Templates/" + destination + window.location.search
+		}
+
+		(function () {
+
+			Office.initialize = function (reason) {
+
+				$(document).ready(function () {
+
+					$('.fixed-action-btn').floatingActionButton();
+
+					var models = window['powerbi-client'].models;
+					importReportParameters(models)
+
+				});
+			};
+
+		})();
+
+	</script>
+
+</body>
+
+</html>

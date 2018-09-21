@@ -1,0 +1,3 @@
+Y:\Documents\PowerBIEmbed\PowerBIEmbed\obj\Debug\PowerBIEmbed.csprojAssemblyReference.cache
+Y:\Documents\PowerBIEmbed\PowerBIEmbed\obj\Debug\PowerBIEmbed.csproj.CoreCompileInputs.cache
+Y:\Documents\PowerBIEmbed\PowerBIEmbed\bin\Debug\PowerBIEmbed.dll.config

@@ -1,0 +1,2 @@
+bin\Debug\OfficeAppManifests\PowerBIEmbedManifest.xml
+Y:\Documents\PowerBIEmbed\PowerBIEmbed\bin\Debug\PowerBIEmbed.debugapp

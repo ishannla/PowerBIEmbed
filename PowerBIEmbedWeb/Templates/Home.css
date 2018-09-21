@@ -1,0 +1,15 @@
+﻿.customwidth {
+	width: 50%;
+	text-align: center; 
+}
+
+#content-main {
+	background: #fff;
+	position: fixed;
+	top: 80px;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	overflow: auto;
+}
+
