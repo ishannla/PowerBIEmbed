@@ -11,6 +11,8 @@ My tool solves multiple problems with its incorporated feature set:
 
 The following options are enabled on hover: get rid of options, go back to navigation, toggle filters, toggle edit/view mode, refresh report. <br />
 
+![Snapshot sample](PowerBIEmbedWeb/snapshot.png?raw=true)
+
 ![My Workspace](PowerBIEmbedWeb/myworkspace.jpg?raw=true)
 
 ![Shared Workspaces](PowerBIEmbedWeb/sharedworkspace.jpg?raw=true)  
